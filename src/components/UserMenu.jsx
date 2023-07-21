@@ -3,45 +3,55 @@ import { useDispatch } from 'react-redux';
 
 import {
   Typography,
-  IconButton,
   Menu,
   MenuItem,
   ListItemIcon,
   CircularProgress,
+  Avatar,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { AccountCircle, Logout } from '@mui/icons-material';
+import { Logout, Face } from '@mui/icons-material';
 
 import { logOut } from '@/redux/authOperations';
 import { useAuth } from '@/hooks/useAuth';
+import ChangeAvatarModal from './ChangeAvatarModal';
 
 export default function UserMenu() {
   const dispatch = useDispatch();
   const { user, isAuth } = useAuth();
   const isMobile = useMediaQuery('(max-width:768px)');
+  const isTiny = useMediaQuery('(max-width:380px)');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleMenu = event => {
+  const handleOpenMenu = event => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+    handleCloseMenu();
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
   };
 
   return (
     <>
-      <Typography>{`${isMobile ? '' : 'Welcome, '}${user.name}`}</Typography>
-      <IconButton
-        size="large"
-        aria-label="account of current user"
-        aria-controls="menu-appbar"
-        aria-haspopup="true"
-        onClick={handleMenu}
-        color="inherit"
-      >
-        <AccountCircle />
-      </IconButton>
+      {!isTiny && (
+        <Typography>{`${isMobile ? '' : 'Welcome, '}${user.name}`}</Typography>
+      )}
+      <Avatar
+        alt="Remy Sharp"
+        src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
+        onClick={handleOpenMenu}
+        sx={{ ml: 1 }}
+      />
       <Menu
         id="menu-appbar"
         anchorEl={anchorEl}
@@ -55,8 +65,14 @@ export default function UserMenu() {
           horizontal: 'right',
         }}
         open={Boolean(anchorEl)}
-        onClose={handleClose}
+        onClose={handleCloseMenu}
       >
+        <MenuItem onClick={handleOpenModal}>
+          <ListItemIcon>
+            <Face fontSize="small" />
+          </ListItemIcon>
+          Change Avatar
+        </MenuItem>
         <MenuItem onClick={() => dispatch(logOut())}>
           <ListItemIcon>
             {isAuth ? (
@@ -68,6 +84,7 @@ export default function UserMenu() {
           Logout
         </MenuItem>
       </Menu>
+      <ChangeAvatarModal open={isModalOpen} onClose={handleCloseModal} />
     </>
   );
 }
