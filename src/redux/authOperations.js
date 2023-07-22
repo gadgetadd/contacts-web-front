@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-axios.defaults.baseURL = 'https://connections-api.herokuapp.com';
+axios.defaults.baseURL = 'https://contacts-webserver.onrender.com/api';
 
 const setToken = token => axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 const removeToken = () => axios.defaults.headers.common.Authorization = '';
@@ -57,6 +57,21 @@ export const logOut = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.message);
     }
 });
+
+export const changeAvatar = createAsyncThunk(
+    'auth/changeAvatar',
+    async (data, thunkAPI) => {
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        }
+        try {
+            const res = await axios.patch('/users/avatars', data, config);
+            return res.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
 
 
 

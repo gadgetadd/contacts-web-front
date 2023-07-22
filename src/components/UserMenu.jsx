@@ -47,8 +47,8 @@ export default function UserMenu() {
         <Typography>{`${isMobile ? '' : 'Welcome, '}${user.name}`}</Typography>
       )}
       <Avatar
-        alt="Remy Sharp"
-        src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
+        alt="user avatar"
+        src={user.avatarURL}
         onClick={handleOpenMenu}
         sx={{ ml: 1 }}
       />

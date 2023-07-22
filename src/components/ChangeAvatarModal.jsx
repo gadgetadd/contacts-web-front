@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { enqueueSnackbar } from 'notistack';
 import {
   Modal,
@@ -8,9 +9,14 @@ import {
   CardMedia,
   CardActions,
   Button,
+  CircularProgress,
 } from '@mui/material';
 
-import avatar from '../images/default-avatar.jpg';
+// import avatar from '../images/default-avatar.jpg';
+
+import { useAuth } from '../hooks/useAuth';
+
+import { changeAvatar } from '@/redux/authOperations';
 
 const style = {
   position: 'absolute',
@@ -25,6 +31,8 @@ const style = {
 export default function ChangeAvatarModal({ open, onClose }) {
   const [image, setImage] = useState(null);
   const fileInput = useRef(null);
+  const { user, isAuth } = useAuth();
+  const dispatch = useDispatch();
 
   const handlePickImage = e => {
     const selectedFile = e.target.files[0];
@@ -43,14 +51,21 @@ export default function ChangeAvatarModal({ open, onClose }) {
     setImage(selectedFile);
   };
 
-  const handleCancelAvatar = () => {
+  const handleCloseModal = () => {
     setImage(null);
     onClose();
   };
+
+  const handleUpload = () => {
+    let fd = new FormData();
+    fd.append('avatar', image);
+    dispatch(changeAvatar(fd));
+  };
+
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleCloseModal}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -64,7 +79,7 @@ export default function ChangeAvatarModal({ open, onClose }) {
               height: 150,
               width: 150,
             }}
-            image={image ? URL.createObjectURL(image) : avatar}
+            image={image ? URL.createObjectURL(image) : user.avatarURL}
             title="avatar"
             component="img"
           />
@@ -78,10 +93,14 @@ export default function ChangeAvatarModal({ open, onClose }) {
             <Button size="small" onClick={() => fileInput.current.click()}>
               Pick an image
             </Button>
-            <Button size="small" disabled={!image}>
-              Upload
+            <Button size="small" disabled={!image} onClick={handleUpload}>
+              {isAuth ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                'Upload'
+              )}
             </Button>
-            <Button size="small" onClick={handleCancelAvatar}>
+            <Button size="small" onClick={handleCloseModal}>
               Cancel
             </Button>
           </CardActions>
