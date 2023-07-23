@@ -40,7 +40,8 @@ export default function ContactForm() {
   const isNew = drawerVariant === formVariant.new;
   const isEdit = drawerVariant === formVariant.edit;
 
-  const findContact = contactId => contacts.find(({ id }) => id === contactId);
+  const findContact = contactId =>
+    contacts.find(({ _id }) => _id === contactId);
 
   const prevContact = useRef(isEdit ? findContact(contactId) : null);
 

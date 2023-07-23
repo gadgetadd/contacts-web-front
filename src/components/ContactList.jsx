@@ -16,7 +16,7 @@ export default function ContactList() {
   return (
     <List>
       {visibleContacts.map(contact => (
-        <ContactItem key={contact.id} {...contact} />
+        <ContactItem key={contact._id} {...contact} />
       ))}
     </List>
   );

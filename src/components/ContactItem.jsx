@@ -14,20 +14,44 @@ import {
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { enqueueSnackbar } from 'notistack';
 
 import { openDrawerEdit } from '@/redux/modalSlice';
-import { useDeleteContactMutation } from '@/redux/contactsApi';
+import {
+  useDeleteContactMutation,
+  useToggleFavoriteMutation,
+} from '@/redux/contactsApi';
 
-export default function ContactItem({ name, number, id }) {
+export default function ContactItem({ name, number, _id: id, favorite }) {
   const [deleteContact, { isLoading }] = useDeleteContactMutation();
+  const [toggleFavorite, { isLoading: isToggling }] =
+    useToggleFavoriteMutation();
   const dispatch = useDispatch();
 
   return (
     <ListItem
-      sx={{ pr: '96px', pl: 0 }}
+      sx={{ pr: '144px', pl: 0 }}
       secondaryAction={
-        <Box sx={{ display: 'flex', gap: '10px' }}>
+        <Box sx={{ display: 'flex', gap: '16px' }}>
+          <Tooltip
+            title={favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+          >
+            <IconButton
+              aria-label="favorite"
+              disabled={isToggling}
+              onClick={() => toggleFavorite([id, { favorite: !favorite }])}
+            >
+              {isToggling ? (
+                <CircularProgress size={24} />
+              ) : favorite ? (
+                <FavoriteIcon color="error" />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Edit">
             <IconButton
               aria-label="edit"
@@ -76,5 +100,6 @@ export default function ContactItem({ name, number, id }) {
 ContactItem.propTypes = {
   name: PropTypes.string.isRequired,
   number: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  _id: PropTypes.string.isRequired,
+  favorite: PropTypes.bool.isRequired,
 };

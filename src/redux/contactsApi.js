@@ -28,7 +28,6 @@ const contactsApi = createApi({
                 url: "/contacts",
                 method: 'GET',
             }),
-
             providesTags: (result) => (result
                 ? [...result.map(({ id }) => ({ type: 'Contacts', id })), { type: 'Contacts', id: 'LIST' }]
                 : [{ type: 'Contacts', id: 'LIST' }]),
@@ -58,9 +57,24 @@ const contactsApi = createApi({
             })
             ,
             invalidatesTags: [{ type: 'Contacts', id: 'LIST' }]
+        }),
+        toggleFavorite: builder.mutation({
+            query: ([id, data]) => ({
+                url: `/contacts/${id}/favorite`,
+                method: 'PATCH',
+                data
+            })
+            ,
+            invalidatesTags: [{ type: 'Contacts', id: 'LIST' }]
         })
     }),
 })
 
 export default contactsApi;
-export const { useFetchContactsQuery, useAddContactMutation, useDeleteContactMutation, useEditContactMutation } = contactsApi
+export const {
+    useFetchContactsQuery,
+    useAddContactMutation,
+    useDeleteContactMutation,
+    useEditContactMutation,
+    useToggleFavoriteMutation
+} = contactsApi
