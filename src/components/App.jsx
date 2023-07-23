@@ -14,6 +14,7 @@ import { refreshUser } from '@/redux/authOperations';
 import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const VerifyPage = lazy(() => import('@/pages/VerifyPage'));
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ContactsPage = lazy(() => import('@/pages/ContactsPage'));
 
@@ -50,6 +51,15 @@ export default function App() {
                 <RestrictedRoute
                   redirectTo="/contacts"
                   component={<LoginPage />}
+                />
+              }
+            />
+            <Route
+              path="/verify"
+              element={
+                <RestrictedRoute
+                  redirectTo="/contacts"
+                  component={<VerifyPage />}
                 />
               }
             />

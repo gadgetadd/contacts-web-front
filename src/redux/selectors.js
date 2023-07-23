@@ -1,4 +1,6 @@
-export const selectFilter = state => state.filter;
+export const selectNameFilter = state => state.filter.name;
+
+export const selectFavoritesFilter = state => state.filter.favorites;
 
 export const selectIsLoggedIn = state => state.auth.isLoggedIn;
 

@@ -32,9 +32,9 @@ export default function ContactItem({ name, number, _id: id, favorite }) {
 
   return (
     <ListItem
-      sx={{ pr: '144px', pl: 0 }}
+      sx={{ pr: '200px', pl: 0 }}
       secondaryAction={
-        <Box sx={{ display: 'flex', gap: '16px' }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
           <Tooltip
             title={favorite ? 'Remove from Favorites' : 'Add to Favorites'}
           >

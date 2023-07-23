@@ -3,19 +3,28 @@ import { List } from '@mui/material';
 
 import ContactItem from '@/components/ContactItem';
 import { useFetchContactsQuery } from '@/redux/contactsApi';
-import { selectFilter } from '@/redux/selectors';
+import { selectNameFilter, selectFavoritesFilter } from '@/redux/selectors';
 
 export default function ContactList() {
   const { data = [] } = useFetchContactsQuery();
-  const filter = useSelector(selectFilter);
+  const nameFilter = useSelector(selectNameFilter);
+  const favoritesFilter = useSelector(selectFavoritesFilter);
 
-  const visibleContacts = data.filter(contact =>
-    contact.name.toLowerCase().includes(filter)
-  );
+  const filterContacts = contacts => {
+    let filtered = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(nameFilter)
+    );
+    if (favoritesFilter !== '' && favoritesFilter !== 'none') {
+      filtered = filtered.filter(
+        contact => contact.favorite === favoritesFilter
+      );
+    }
+    return filtered;
+  };
 
   return (
     <List>
-      {visibleContacts.map(contact => (
+      {filterContacts(data).map(contact => (
         <ContactItem key={contact._id} {...contact} />
       ))}
     </List>
