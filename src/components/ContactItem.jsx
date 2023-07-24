@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   ListItem,
@@ -10,12 +11,17 @@ import {
   Box,
   CircularProgress,
   Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
 } from '@mui/material';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { enqueueSnackbar } from 'notistack';
 
 import { openDrawerEdit } from '@/redux/modalSlice';
@@ -29,60 +35,135 @@ export default function ContactItem({ name, number, _id: id, favorite }) {
   const [toggleFavorite, { isLoading: isToggling }] =
     useToggleFavoriteMutation();
   const dispatch = useDispatch();
+  const isMobile = useMediaQuery('(max-width:420px)');
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleOpenMenu = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <ListItem
       sx={{ pr: '200px', pl: 0 }}
       secondaryAction={
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Tooltip
-            title={favorite ? 'Remove from Favorites' : 'Add to Favorites'}
-          >
-            <IconButton
-              aria-label="favorite"
-              disabled={isToggling}
-              onClick={() => toggleFavorite([id, { favorite: !favorite }])}
-            >
-              {isToggling ? (
-                <CircularProgress size={24} />
-              ) : favorite ? (
-                <FavoriteIcon color="error" />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
+        isMobile ? (
+          <>
+            <IconButton aria-label="more" edge="end" onClick={handleOpenMenu}>
+              <MoreVertIcon />
             </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              aria-label="edit"
-              onClick={() => dispatch(openDrawerEdit(id))}
+            <Menu
+              id="menu-item"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleCloseMenu}
             >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              disabled={isLoading}
-              onClick={() =>
-                deleteContact(id)
-                  .then(({ data }) => {
-                    enqueueSnackbar(`Contact ${data.name} deleted`, {
-                      variant: 'info',
-                    });
-                  })
-                  .catch(() =>
-                    enqueueSnackbar('Something went wrong', {
-                      variant: 'error',
+              <MenuItem
+                aria-label="favorite"
+                disabled={isToggling}
+                onClick={() => toggleFavorite([id, { favorite: !favorite }])}
+              >
+                <ListItemIcon>
+                  {isToggling ? (
+                    <CircularProgress size={24} />
+                  ) : favorite ? (
+                    <FavoriteIcon color="error" />
+                  ) : (
+                    <FavoriteBorderIcon />
+                  )}
+                </ListItemIcon>
+                {favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+              </MenuItem>
+              <MenuItem
+                aria-label="edit"
+                onClick={() => {
+                  dispatch(openDrawerEdit(id));
+                  handleCloseMenu();
+                }}
+              >
+                <ListItemIcon>
+                  <EditIcon />
+                </ListItemIcon>
+                Edit contact
+              </MenuItem>
+              <MenuItem
+                aria-label="delete"
+                disabled={isLoading}
+                onClick={() =>
+                  deleteContact(id)
+                    .then(({ data }) => {
+                      enqueueSnackbar(`Contact ${data.name} deleted`, {
+                        variant: 'info',
+                      });
                     })
-                  )
-              }
+                    .catch(() =>
+                      enqueueSnackbar('Something went wrong', {
+                        variant: 'error',
+                      })
+                    )
+                }
+              >
+                <ListItemIcon>
+                  {isLoading ? <CircularProgress size={24} /> : <DeleteIcon />}
+                </ListItemIcon>
+                Delete contact
+              </MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Tooltip
+              title={favorite ? 'Remove from Favorites' : 'Add to Favorites'}
             >
-              {isLoading ? <CircularProgress size={24} /> : <DeleteIcon />}
-            </IconButton>
-          </Tooltip>
-        </Box>
+              <IconButton
+                aria-label="favorite"
+                disabled={isToggling}
+                onClick={() => toggleFavorite([id, { favorite: !favorite }])}
+              >
+                {isToggling ? (
+                  <CircularProgress size={24} />
+                ) : favorite ? (
+                  <FavoriteIcon color="error" />
+                ) : (
+                  <FavoriteBorderIcon />
+                )}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit">
+              <IconButton
+                aria-label="edit"
+                onClick={() => dispatch(openDrawerEdit(id))}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                disabled={isLoading}
+                onClick={() =>
+                  deleteContact(id)
+                    .then(({ data }) => {
+                      enqueueSnackbar(`Contact ${data.name} deleted`, {
+                        variant: 'info',
+                      });
+                    })
+                    .catch(() =>
+                      enqueueSnackbar('Something went wrong', {
+                        variant: 'error',
+                      })
+                    )
+                }
+              >
+                {isLoading ? <CircularProgress size={24} /> : <DeleteIcon />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )
       }
     >
       <ListItemButton href={`tel:${number}`} sx={{ p: 0 }}>

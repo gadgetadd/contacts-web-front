@@ -5,7 +5,7 @@ const filterSlice = createSlice({
     name: 'filter',
     initialState: {
         name: '',
-        favorites: ''
+        favorites: 'all'
     },
     reducers: {
         setNameFilter: (state, action) => {

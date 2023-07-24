@@ -1,12 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  Box,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
+import { Box, TextField, FormControl, Select, MenuItem } from '@mui/material';
 
 import { selectNameFilter, selectFavoritesFilter } from '@/redux/selectors';
 import { setNameFilter, setFavoritesFilter } from '@/redux/filterSlice';
@@ -43,17 +36,15 @@ export default function Filter() {
         onChange={nameFilterHandler}
       />
       <FormControl>
-        <InputLabel id="favorites">Favorites</InputLabel>
         <Select
-          sx={{ width: 160 }}
-          labelId="favorites"
+          sx={{ width: 160, pt: 2 }}
           variant="standard"
           onChange={favoritesFilterHandler}
           value={favoritesFilter}
         >
           <MenuItem value={true}>Favorites</MenuItem>
           <MenuItem value={false}>Non-Favorites</MenuItem>
-          <MenuItem value={'none'}>Show All</MenuItem>
+          <MenuItem value={'all'}>Show All</MenuItem>
         </Select>
       </FormControl>
     </Box>
