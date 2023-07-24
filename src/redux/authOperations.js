@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-axios.defaults.baseURL = 'https://contacts-webserver.onrender.com/api';
+// axios.defaults.baseURL = 'https://contacts-webserver.onrender.com/api';
+axios.defaults.baseURL = 'http://localhost:3000/api';
 
 const setToken = token => axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 const removeToken = () => axios.defaults.headers.common.Authorization = '';
@@ -66,6 +67,31 @@ export const changeAvatar = createAsyncThunk(
         }
         try {
             const res = await axios.patch('/users/avatars', data, config);
+            return res.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
+export const verify = createAsyncThunk(
+    'auth/verify',
+    async (data, thunkAPI) => {
+        try {
+            const res = await axios.post('/users/verify', data);
+            setToken(res.data.token);
+            return res.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
+export const resend = createAsyncThunk(
+    'auth/resend',
+    async (data, thunkAPI) => {
+        try {
+            const res = await axios.post('/users/resend', data);
             return res.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

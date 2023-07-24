@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Link as RouteLink } from 'react-router-dom';
+import { Link as RouteLink, useNavigate } from 'react-router-dom';
 import { enqueueSnackbar } from 'notistack';
 import { string } from 'yup';
 
@@ -29,13 +29,15 @@ export default function RegisterPage() {
     lastName: true,
     email: true,
     password: true,
+    confirmPassword: true,
   });
   const dispatch = useDispatch();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  console.log(isValid);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const navigate = useNavigate();
   const nameSchema = string()
     .matches(/^[a-zA-Zа-яіїєґА-ЯІЇЄҐ]+([' -][a-zA-Zа-яіїєґА-ЯІЇЄҐ]*)*$/)
     .max(35);
@@ -81,6 +83,14 @@ export default function RegisterPage() {
           .catch(() => setValid(prev => ({ ...prev, password: false })));
         setPassword(value);
         break;
+      case 'confirmPassword':
+        if (value === password) {
+          setValid(prev => ({ ...prev, confirmPassword: true }));
+        } else {
+          setValid(prev => ({ ...prev, confirmPassword: false }));
+        }
+        setConfirmPassword(value);
+        break;
       default:
         throw new Error('unsupported input name');
     }
@@ -92,7 +102,8 @@ export default function RegisterPage() {
       isValid.firstName &&
       isValid.lastName &&
       isValid.email &&
-      isValid.password;
+      isValid.password &&
+      isValid.confirmPassword;
     if (!isValidData) {
       enqueueSnackbar('Please check the entered data', {
         variant: 'error',
@@ -105,7 +116,7 @@ export default function RegisterPage() {
       email: formEls.email.value,
       password: formEls.password.value,
     };
-    dispatch(signUp(user));
+    dispatch(signUp(user)).then(() => navigate('/verify'));
   };
 
   return (
@@ -193,6 +204,21 @@ export default function RegisterPage() {
                 autoComplete="new-password"
               />
             </Grid>
+            <Grid item xs={12}>
+              <TextField
+                onChange={inputChangeHandler}
+                value={confirmPassword}
+                error={!isValid.confirmPassword}
+                title="Password must contain at least 8 characters"
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                autoComplete="new-password"
+              />
+            </Grid>
           </Grid>
           <Button
             type="submit"
@@ -207,6 +233,13 @@ export default function RegisterPage() {
             <Grid item>
               <Link variant="body2" component={RouteLink} to="/login">
                 Already have an account? Sign in
+              </Link>
+            </Grid>
+          </Grid>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+              <Link variant="body2" component={RouteLink} to="/verify">
+                Already have an code? Verify your account
               </Link>
             </Grid>
           </Grid>

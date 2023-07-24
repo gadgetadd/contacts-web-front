@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const VerifyPage = lazy(() => import('@/pages/VerifyPage'));
+const ResendPage = lazy(() => import('@/pages/ResendPage'));
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ContactsPage = lazy(() => import('@/pages/ContactsPage'));
 
@@ -60,6 +61,15 @@ export default function App() {
                 <RestrictedRoute
                   redirectTo="/contacts"
                   component={<VerifyPage />}
+                />
+              }
+            />
+            <Route
+              path="/resend"
+              element={
+                <RestrictedRoute
+                  redirectTo="/contacts"
+                  component={<ResendPage />}
                 />
               }
             />

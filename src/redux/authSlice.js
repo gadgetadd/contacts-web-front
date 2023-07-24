@@ -1,5 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { signUp, logIn, logOut, refreshUser, changeAvatar } from './authOperations';
+import {
+    signUp,
+    logIn, logOut,
+    refreshUser,
+    changeAvatar,
+    verify,
+    resend
+} from './authOperations';
 
 const initialState = {
     user: { name: null, email: null },
@@ -20,16 +27,34 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(signUp.fulfilled, (state, action) => {
-                state.user = action.payload.user;
-                state.token = action.payload.token;
-                state.isLoggedIn = true;
+            .addCase(signUp.fulfilled, (state) => {
                 state.isAuth = false;
             }).addCase(signUp.rejected, (state, action) => {
                 state.error = action.payload
                 state.isAuth = false;
             })
             .addCase(signUp.pending, (state) => {
+                state.isAuth = true
+            })
+            .addCase(verify.fulfilled, (state, action) => {
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.isLoggedIn = true;
+                state.isAuth = false;
+            }).addCase(verify.rejected, (state, action) => {
+                state.error = action.payload
+                state.isAuth = false;
+            })
+            .addCase(verify.pending, (state) => {
+                state.isAuth = true
+            })
+            .addCase(resend.fulfilled, (state) => {
+                state.isAuth = false;
+            }).addCase(resend.rejected, (state, action) => {
+                state.isAuth = false;
+                state.error = action.payload
+            })
+            .addCase(resend.pending, (state) => {
                 state.isAuth = true
             })
             .addCase(logIn.fulfilled, (state, action) => {
@@ -67,7 +92,7 @@ const authSlice = createSlice({
             })
             .addCase(refreshUser.rejected, (state) => {
                 state.isRefreshing = false;
-            }).addCase(changeAvatar.pending,(state) => {
+            }).addCase(changeAvatar.pending, (state) => {
                 state.isAuth = true;
             }).addCase(changeAvatar.fulfilled, (state, action) => {
                 state.user = { ...state.user, ...action.payload };
