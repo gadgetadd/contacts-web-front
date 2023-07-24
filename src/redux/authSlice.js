@@ -17,6 +17,15 @@ const initialState = {
     error: null
 };
 
+const authRejectHandler = (state, action) => {
+    state.error = action.payload
+    state.isAuth = false;
+};
+
+const authPendingHandler = (state) => {
+    state.isAuth = true;
+};
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -29,33 +38,15 @@ const authSlice = createSlice({
         builder
             .addCase(signUp.fulfilled, (state) => {
                 state.isAuth = false;
-            }).addCase(signUp.rejected, (state, action) => {
-                state.error = action.payload
-                state.isAuth = false;
-            })
-            .addCase(signUp.pending, (state) => {
-                state.isAuth = true
             })
             .addCase(verify.fulfilled, (state, action) => {
                 state.user = action.payload.user;
                 state.token = action.payload.token;
                 state.isLoggedIn = true;
                 state.isAuth = false;
-            }).addCase(verify.rejected, (state, action) => {
-                state.error = action.payload
-                state.isAuth = false;
-            })
-            .addCase(verify.pending, (state) => {
-                state.isAuth = true
             })
             .addCase(resend.fulfilled, (state) => {
                 state.isAuth = false;
-            }).addCase(resend.rejected, (state, action) => {
-                state.isAuth = false;
-                state.error = action.payload
-            })
-            .addCase(resend.pending, (state) => {
-                state.isAuth = true
             })
             .addCase(logIn.fulfilled, (state, action) => {
                 state.user = action.payload.user;
@@ -63,24 +54,11 @@ const authSlice = createSlice({
                 state.isLoggedIn = true;
                 state.isAuth = false;
             })
-            .addCase(logIn.rejected, (state, action) => {
-                state.error = action.payload
-                state.isAuth = false;
-            })
-            .addCase(logIn.pending, (state) => {
-                state.isAuth = true
-            })
             .addCase(logOut.fulfilled, (state) => {
                 state.user = { name: null, email: null };
                 state.token = null;
                 state.isLoggedIn = false;
                 state.isAuth = false;
-            })
-            .addCase(logOut.rejected, (state) => {
-                state.isAuth = false;
-            })
-            .addCase(logOut.pending, (state) => {
-                state.isAuth = true
             })
             .addCase(refreshUser.pending, (state) => {
                 state.isRefreshing = true;
@@ -92,16 +70,23 @@ const authSlice = createSlice({
             })
             .addCase(refreshUser.rejected, (state) => {
                 state.isRefreshing = false;
-            }).addCase(changeAvatar.pending, (state) => {
-                state.isAuth = true;
-            }).addCase(changeAvatar.fulfilled, (state, action) => {
+            })
+            .addCase(changeAvatar.fulfilled, (state, action) => {
                 state.user = { ...state.user, ...action.payload };
                 state.isAuth = false;
             })
-            .addCase(changeAvatar.rejected, (state, action) => {
-                state.error = action.payload
-                state.isAuth = false;
-            })
+            .addCase(signUp.pending, authPendingHandler)
+            .addCase(logIn.pending, authPendingHandler)
+            .addCase(logOut.pending, authPendingHandler)
+            .addCase(changeAvatar.pending, authPendingHandler)
+            .addCase(verify.pending, authPendingHandler)
+            .addCase(resend.pending, authPendingHandler)
+            .addCase(signUp.rejected, authRejectHandler)
+            .addCase(logIn.rejected, authRejectHandler)
+            .addCase(logOut.rejected, authRejectHandler)
+            .addCase(changeAvatar.rejected, authRejectHandler)
+            .addCase(verify.rejected, authRejectHandler)
+            .addCase(resend.rejected, authRejectHandler)
     }
 })
 

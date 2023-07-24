@@ -116,7 +116,9 @@ export default function RegisterPage() {
       email: formEls.email.value,
       password: formEls.password.value,
     };
-    dispatch(signUp(user)).then(() => navigate('/verify'));
+    dispatch(signUp(user)).then(res => {
+      if (res.type === 'auth/signup/fulfilled') navigate('/verify');
+    });
   };
 
   return (
