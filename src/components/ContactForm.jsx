@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -42,8 +42,6 @@ export default function ContactForm() {
 
   const findContact = contactId =>
     contacts.find(({ _id }) => _id === contactId);
-
-  const prevContact = useRef(isEdit ? findContact(contactId) : null);
 
   const [name, setName] = useState(
     contactId ? findContact(contactId).name : ''
@@ -99,18 +97,6 @@ export default function ContactForm() {
     if (!isValid.number) {
       enqueueSnackbar('Please enter the correct number', {
         variant: 'error',
-      });
-      return;
-    }
-
-    const isExists = contacts.some(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-    const isSame =
-      prevContact?.current?.name?.toLowerCase() === name.toLowerCase();
-    if (isExists && !isSame) {
-      enqueueSnackbar(`${name} is already in contacts`, {
-        variant: 'warning',
       });
       return;
     }

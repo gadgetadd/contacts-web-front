@@ -12,8 +12,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-// import avatar from '../images/default-avatar.jpg';
-
 import { useAuth } from '../hooks/useAuth';
 
 import { changeAvatar } from '@/redux/authOperations';
@@ -59,7 +57,18 @@ export default function ChangeAvatarModal({ open, onClose }) {
   const handleUpload = () => {
     let fd = new FormData();
     fd.append('avatar', image);
-    dispatch(changeAvatar(fd));
+    dispatch(changeAvatar(fd)).then(res => {
+      if (res.type === 'auth/changeAvatar/fulfilled') {
+        enqueueSnackbar(`Avatar successfully updated!`, {
+          variant: 'success',
+        });
+        handleCloseModal();
+      } else {
+        enqueueSnackbar('Something went wrong. Please try again later.', {
+          variant: 'error',
+        });
+      }
+    });
   };
 
   return (

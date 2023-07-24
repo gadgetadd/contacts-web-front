@@ -120,7 +120,7 @@ export default function VerifyPage() {
       {error && (
         <Alert severity="error">
           {error !== 'Network Error'
-            ? 'The code entered is not valid. Please try signing in again or create a new account.'
+            ? 'The code entered is not valid. If your email already confirmed, try to sign in. Or create a new account.'
             : error}
         </Alert>
       )}
