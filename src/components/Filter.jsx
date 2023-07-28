@@ -11,7 +11,7 @@ export default function Filter() {
 
   const nameFilterHandler = e => {
     const { value } = e.target;
-    dispatch(setNameFilter(value.toLowerCase()));
+    dispatch(setNameFilter(value.trim().toLowerCase()));
   };
 
   const favoritesFilterHandler = e => {
@@ -43,8 +43,7 @@ export default function Filter() {
           value={favoritesFilter}
         >
           <MenuItem value={true}>Favorites</MenuItem>
-          <MenuItem value={false}>Non-Favorites</MenuItem>
-          <MenuItem value={'all'}>Show All</MenuItem>
+          <MenuItem value={false}>Show All</MenuItem>
         </Select>
       </FormControl>
     </Box>

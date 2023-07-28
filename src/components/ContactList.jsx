@@ -14,7 +14,7 @@ export default function ContactList() {
     let filtered = contacts.filter(contact =>
       contact.name.toLowerCase().includes(nameFilter)
     );
-    if (favoritesFilter !== 'all') {
+    if (favoritesFilter) {
       filtered = filtered.filter(
         contact => contact.favorite === favoritesFilter
       );
