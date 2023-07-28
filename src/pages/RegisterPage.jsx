@@ -231,14 +231,14 @@ export default function RegisterPage() {
           >
             Sign Up
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="flex-start">
             <Grid item>
               <Link variant="body2" component={RouteLink} to="/login">
                 Already have an account? Sign in
               </Link>
             </Grid>
           </Grid>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="flex-start">
             <Grid item>
               <Link variant="body2" component={RouteLink} to="/verify">
                 Already have an code? Verify your account

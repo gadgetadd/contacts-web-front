@@ -110,7 +110,7 @@ export default function ResendPage() {
           >
             Resend a code
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="flex-start">
             <Grid item>
               <Link variant="body2" component={RouteLink} to="/login">
                 {"Don't have a code? Request a resend."}

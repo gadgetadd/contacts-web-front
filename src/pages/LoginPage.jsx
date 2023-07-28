@@ -146,7 +146,7 @@ export default function LoginPage() {
           >
             Sign In
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="flex-start">
             <Grid item>
               <Link variant="body2" component={RouteLink} to="/register">
                 {"Don't have an account? Sign Up"}

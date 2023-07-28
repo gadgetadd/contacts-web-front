@@ -108,7 +108,7 @@ export default function VerifyPage() {
           >
             Verify
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="flex-start">
             <Grid item>
               <Link variant="body2" component={RouteLink} to="/resend">
                 {'Haven`t a code? Request a resend.'}
