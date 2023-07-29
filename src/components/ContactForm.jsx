@@ -51,13 +51,11 @@ export default function ContactForm() {
     .max(35);
 
   const numberSchema = string()
-    .matches(
-      /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
-    )
+    .matches(/^[0-9\s:+=\-_.()]+$/)
     .max(20);
 
   const inputChangeHandler = e => {
-    const { name, value } = e.currentTarget;
+    const { name, value } = e.target;
     switch (name) {
       case 'name':
         nameSchema
