@@ -1,36 +1,42 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { formVariant } from '../constants/constants';
 
 
 const modalSlice = createSlice({
     name: 'modal',
-    initialState: { isDialogOpen: false, isDrawerOpen: false, variant: null, idToEdit: null },
+    initialState: {
+        isFormOpen: false,
+        isFormEdited: false,
+        formVariant: null,
+        idToEdit: null
+    },
     reducers: {
-        openDrawerNew: (state) => {
-            state.isDrawerOpen = true;
-            state.variant = 'new';
+        openFormNew: (state) => {
+            state.isFormOpen = true;
+            state.formVariant = formVariant.new;
         },
-        openDrawerEdit: (state, action) => {
-            state.isDrawerOpen = true;
-            state.variant = 'edit';
+        editForm: (state) => {
+            state.isFormEdited = true;
+        },
+        openFormEdit: (state, action) => {
+            state.isFormOpen = true;
+            state.formVariant = formVariant.edit;
             state.idToEdit = action.payload;
         },
-        closeDrawer: (state) => {
-            state.isDrawerOpen = false;
-            state.variant = null;
+        closeForm: (state) => {
+            state.isFormOpen = false;
+            state.formVariant = null;
             state.idToEdit = null;
+            state.isFormEdited = false;
         },
-        openDialog: (state) => {
-            state.isDialogOpen = true;
-        },
-        closeDialog: (state) => {
-            state.isDialogOpen = false
-        }
-
-
     },
 })
 
-
-export const { openDrawerEdit, openDrawerNew, closeDrawer, openDialog, closeDialog } = modalSlice.actions
+export const {
+    openFormEdit,
+    openFormNew,
+    closeForm,
+    editForm
+} = modalSlice.actions
 
 export default modalSlice.reducer

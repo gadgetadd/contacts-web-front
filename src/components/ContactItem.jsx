@@ -22,15 +22,18 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { enqueueSnackbar } from 'notistack';
 
-import { openDrawerEdit } from '@/redux/modalSlice';
+import { openFormEdit } from '@/redux/modalSlice';
 import {
   useDeleteContactMutation,
   useToggleFavoriteMutation,
 } from '@/redux/contactsApi';
 
+import Warning from '@/components/Warning';
+import { enqueueSnackbar } from 'notistack';
+
 export default function ContactItem({ name, number, _id: id, favorite }) {
+  const [isWarning, setWarning] = useState(false);
   const [deleteContact, { isLoading }] = useDeleteContactMutation();
   const [toggleFavorite, { isLoading: isToggling }] =
     useToggleFavoriteMutation();
@@ -46,27 +49,90 @@ export default function ContactItem({ name, number, _id: id, favorite }) {
     setAnchorEl(null);
   };
 
+  const handleDeleteContact = () => {
+    deleteContact(id)
+      .then(({ data }) => {
+        enqueueSnackbar(`Contact ${data.name} deleted`, {
+          variant: 'info',
+        });
+      })
+      .catch(() =>
+        enqueueSnackbar('Something went wrong', {
+          variant: 'error',
+        })
+      );
+  };
+
   return (
-    <ListItem
-      sx={{ pr: '200px', pl: 0 }}
-      secondaryAction={
-        isMobile ? (
-          <>
-            <IconButton aria-label="more" edge="end" onClick={handleOpenMenu}>
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id="menu-item"
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseMenu}
-            >
-              <MenuItem
-                aria-label="favorite"
-                disabled={isToggling}
-                onClick={() => toggleFavorite([id, { favorite: !favorite }])}
+    <>
+      <ListItem
+        sx={{ pr: '200px', pl: 0 }}
+        secondaryAction={
+          isMobile ? (
+            <>
+              <IconButton aria-label="more" edge="end" onClick={handleOpenMenu}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="menu-item"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleCloseMenu}
               >
-                <ListItemIcon>
+                <MenuItem
+                  aria-label="favorite"
+                  disabled={isToggling}
+                  onClick={() => toggleFavorite([id, { favorite: !favorite }])}
+                >
+                  <ListItemIcon>
+                    {isToggling ? (
+                      <CircularProgress size={24} />
+                    ) : favorite ? (
+                      <FavoriteIcon color="error" />
+                    ) : (
+                      <FavoriteBorderIcon />
+                    )}
+                  </ListItemIcon>
+                  {favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                </MenuItem>
+                <MenuItem
+                  aria-label="edit"
+                  onClick={() => {
+                    dispatch(openFormEdit(id));
+                    handleCloseMenu();
+                  }}
+                >
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  Edit contact
+                </MenuItem>
+                <MenuItem
+                  aria-label="delete"
+                  disabled={isLoading}
+                  onClick={handleDeleteContact}
+                >
+                  <ListItemIcon>
+                    {isLoading ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      <DeleteIcon />
+                    )}
+                  </ListItemIcon>
+                  Delete contact
+                </MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Tooltip
+                title={favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+              >
+                <IconButton
+                  aria-label="favorite"
+                  disabled={isToggling}
+                  onClick={() => toggleFavorite([id, { favorite: !favorite }])}
+                >
                   {isToggling ? (
                     <CircularProgress size={24} />
                   ) : favorite ? (
@@ -74,107 +140,46 @@ export default function ContactItem({ name, number, _id: id, favorite }) {
                   ) : (
                     <FavoriteBorderIcon />
                   )}
-                </ListItemIcon>
-                {favorite ? 'Remove from Favorites' : 'Add to Favorites'}
-              </MenuItem>
-              <MenuItem
-                aria-label="edit"
-                onClick={() => {
-                  dispatch(openDrawerEdit(id));
-                  handleCloseMenu();
-                }}
-              >
-                <ListItemIcon>
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Edit">
+                <IconButton
+                  aria-label="edit"
+                  onClick={() => dispatch(openFormEdit(id))}
+                >
                   <EditIcon />
-                </ListItemIcon>
-                Edit contact
-              </MenuItem>
-              <MenuItem
-                aria-label="delete"
-                disabled={isLoading}
-                onClick={() =>
-                  deleteContact(id)
-                    .then(({ data }) => {
-                      enqueueSnackbar(`Contact ${data.name} deleted`, {
-                        variant: 'info',
-                      });
-                    })
-                    .catch(() =>
-                      enqueueSnackbar('Something went wrong', {
-                        variant: 'error',
-                      })
-                    )
-                }
-              >
-                <ListItemIcon>
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  disabled={isLoading}
+                  onClick={() => setWarning(true)}
+                >
                   {isLoading ? <CircularProgress size={24} /> : <DeleteIcon />}
-                </ListItemIcon>
-                Delete contact
-              </MenuItem>
-            </Menu>
-          </>
-        ) : (
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Tooltip
-              title={favorite ? 'Remove from Favorites' : 'Add to Favorites'}
-            >
-              <IconButton
-                aria-label="favorite"
-                disabled={isToggling}
-                onClick={() => toggleFavorite([id, { favorite: !favorite }])}
-              >
-                {isToggling ? (
-                  <CircularProgress size={24} />
-                ) : favorite ? (
-                  <FavoriteIcon color="error" />
-                ) : (
-                  <FavoriteBorderIcon />
-                )}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Edit">
-              <IconButton
-                aria-label="edit"
-                onClick={() => dispatch(openDrawerEdit(id))}
-              >
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                disabled={isLoading}
-                onClick={() =>
-                  deleteContact(id)
-                    .then(({ data }) => {
-                      enqueueSnackbar(`Contact ${data.name} deleted`, {
-                        variant: 'info',
-                      });
-                    })
-                    .catch(() =>
-                      enqueueSnackbar('Something went wrong', {
-                        variant: 'error',
-                      })
-                    )
-                }
-              >
-                {isLoading ? <CircularProgress size={24} /> : <DeleteIcon />}
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )
-      }
-    >
-      <ListItemButton href={`tel:${number}`} sx={{ p: 0 }}>
-        <ListItemAvatar>
-          <Avatar>
-            <ContactPhoneIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={`${name}`} secondary={`${number}`} />
-      </ListItemButton>
-    </ListItem>
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )
+        }
+      >
+        <ListItemButton href={`tel:${number}`} sx={{ p: 0 }}>
+          <ListItemAvatar>
+            <Avatar>
+              <ContactPhoneIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={`${name}`} secondary={`${number}`} />
+        </ListItemButton>
+      </ListItem>
+      <Warning
+        action={() => deleteContact(id)}
+        isActive={isWarning}
+        onClose={() => setWarning(false)}
+        variant="delete"
+      />
+    </>
   );
 }
 

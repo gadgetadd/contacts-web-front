@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Fab,
@@ -14,24 +15,30 @@ import ContactForm from '@/components/ContactForm';
 import ContactList from '@/components/ContactList';
 import Filter from '@/components/Filter';
 import Loader from '@/components/Loader';
-import Dialog from '@/components/Dialog';
+import Warning from '@/components/Warning';
 
-import { openDrawerNew, closeDrawer, openDialog } from '@/redux/modalSlice';
+import { openFormNew, closeForm } from '@/redux/modalSlice';
 import { useFetchContactsQuery } from '@/redux/contactsApi';
-import { selectIsDrawerOpen } from '@/redux/selectors';
+import { selectIsFormOpen, selectIsFormEdited } from '@/redux/selectors';
 
 export default function ContactsPage() {
-  const isDrawerOpen = useSelector(selectIsDrawerOpen);
+  const [isWarning, setWarning] = useState(false);
+  const isFormEdited = useSelector(selectIsFormEdited);
+  const isFormOpen = useSelector(selectIsFormOpen);
   const dispatch = useDispatch();
   const { data = [], isError, isLoading } = useFetchContactsQuery();
   const isMobile = useMediaQuery('(max-width:786px)');
 
+  const handleCloseForm = () => dispatch(closeForm());
+
   const handleAccidentalClicks = (_, reason) => {
-    if (reason === 'escapeKeyDown' || reason === 'backdropClick') {
-      dispatch(openDialog());
-      return;
+    if (isFormEdited) {
+      if (reason === 'escapeKeyDown' || reason === 'backdropClick') {
+        setWarning(true);
+        return;
+      }
     }
-    dispatch(closeDrawer());
+    handleCloseForm();
   };
 
   return (
@@ -62,7 +69,7 @@ export default function ContactsPage() {
       )}
       <Drawer
         anchor={isMobile ? 'top' : 'bottom'}
-        open={isDrawerOpen}
+        open={isFormOpen}
         ModalProps={{ onClose: handleAccidentalClicks }}
       >
         <ContactForm />
@@ -75,11 +82,16 @@ export default function ContactsPage() {
         }}
         color="primary"
         aria-label="add"
-        onClick={() => dispatch(openDrawerNew())}
+        onClick={() => dispatch(openFormNew())}
       >
         <AddIcon />
       </Fab>
-      <Dialog />
+      <Warning
+        action={handleCloseForm}
+        isActive={isWarning}
+        onClose={() => setWarning(false)}
+        variant="edit"
+      />
     </Container>
   );
 }

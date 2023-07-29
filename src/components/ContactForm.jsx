@@ -14,16 +14,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import { enqueueSnackbar } from 'notistack';
 import { string } from 'yup';
 
-import { closeDrawer } from '@/redux/modalSlice';
-import { selectDrawerVariant, selectIdToEdit } from '@/redux/selectors';
+import { closeForm, editForm } from '@/redux/modalSlice';
+import { selectFormVariant, selectIdToEdit } from '@/redux/selectors';
 import {
   useAddContactMutation,
   useEditContactMutation,
   useFetchContactsQuery,
 } from '@/redux/contactsApi';
+import { formVariant } from '../constants/constants';
 
 export default function ContactForm() {
-  const drawerVariant = useSelector(selectDrawerVariant);
+  const variant = useSelector(selectFormVariant);
   const contactId = useSelector(selectIdToEdit);
   const [isValid, setValid] = useState({ name: true, number: true });
   const { data: contacts } = useFetchContactsQuery();
@@ -32,13 +33,8 @@ export default function ContactForm() {
   const isLoading = isAdding || isEditing;
   const dispatch = useDispatch();
 
-  const formVariant = {
-    new: 'new',
-    edit: 'edit',
-  };
-
-  const isNew = drawerVariant === formVariant.new;
-  const isEdit = drawerVariant === formVariant.edit;
+  const isNew = variant === formVariant.new;
+  const isEdit = variant === formVariant.edit;
 
   const findContact = contactId =>
     contacts.find(({ _id }) => _id === contactId);
@@ -80,6 +76,7 @@ export default function ContactForm() {
       default:
         throw new Error('unsupported input name');
     }
+    dispatch(editForm());
   };
 
   const submitHandler = e => {
@@ -100,11 +97,10 @@ export default function ContactForm() {
       });
       return;
     }
-
     if (isNew) {
       addContact({ name, number })
         .then(({ data }) => {
-          dispatch(closeDrawer());
+          dispatch(closeForm());
           enqueueSnackbar(`Contact ${data.name} added`, {
             variant: 'success',
           });
@@ -118,7 +114,7 @@ export default function ContactForm() {
     if (isEdit) {
       editContact([contactId, { name, number }])
         .then(({ data }) => {
-          dispatch(closeDrawer());
+          dispatch(closeForm());
           enqueueSnackbar(`Contact ${data.name} edited`, {
             variant: 'success',
           });
@@ -194,7 +190,7 @@ export default function ContactForm() {
           fullWidth
           variant="outlined"
           sx={{ mb: 2 }}
-          onClick={() => dispatch(closeDrawer())}
+          onClick={() => dispatch(closeForm())}
         >
           Cancel
         </Button>
