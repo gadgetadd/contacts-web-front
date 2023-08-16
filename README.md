@@ -1,8 +1,16 @@
-# React + Vite
+# Phonebook
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An application for managing your contacts with a minimalist design. It allows
+adding, editing, and deleting contacts, as well as marking favorites. Supports
+filtering by name and favorites.
 
-Currently, two official plugins are available:
+## Technologies used:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React,
+- Redux,
+- Axios,
+- MaterialUI.
+
+## Backend part of the application:
+
+https://github.com/gadgetadd/contacts-backend
